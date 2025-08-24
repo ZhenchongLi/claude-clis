@@ -204,6 +204,7 @@ def show_tools_list(cli_ctx: CLIContext) -> None:
     tools = [
         ["doc2md", "Convert documents to Markdown", "PDF, DOCX → Markdown"],
         ["config", "Manage configuration", "AI providers, API keys"],
+        ["claude-code", "Claude Code integration", "Register CLI commands"],
     ]
     
     cli_ctx.info("🤖 Claude CLI Tools - Available Tools:")
@@ -245,15 +246,22 @@ def _print_config_table(config_dict: dict[str, Any], prefix: str = "") -> None:
     )
 
 
-# Register tools
+# Register tools and commands
 def register_tools() -> None:
-    """Register all available tools with the main CLI"""
+    """Register all available tools and commands with the main CLI"""
     try:
         from .tools.doc2md.cli import doc2md
         main.add_command(doc2md)
     except ImportError as e:
         # Handle gracefully if optional tools are not available
         print_error(f"Failed to load doc2md tool: {e}")
+    
+    try:
+        from .commands.claude_code import claude_code_cmd
+        main.add_command(claude_code_cmd)
+    except ImportError as e:
+        # Handle gracefully if claude-code command is not available
+        print_error(f"Failed to load claude-code command: {e}")
 
 
 # Register tools when module is imported

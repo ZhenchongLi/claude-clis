@@ -5,23 +5,29 @@ build-backend = "hatchling.build"
 [project]
 name = "claude-clis"
 version = "0.1.0"
-description = "A collection of AI-powered CLI tools"
+description = "A modern collection of AI-powered CLI tools for document processing, content generation, and more"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.11"
 authors = [
     {name = "Claude CLI Tools", email = "noreply@example.com"}
 ]
-keywords = ["cli", "ai", "tools", "document-processing"]
+keywords = ["cli", "ai", "tools", "document-processing", "markdown", "pdf", "docx", "pipx", "claude"]
 classifiers = [
     "Development Status :: 3 - Alpha",
+    "Environment :: Console",
     "Intended Audience :: Developers",
+    "Intended Audience :: End Users/Desktop",
     "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Topic :: Office/Business :: Office Suites",
     "Topic :: Utilities",
+    "Typing :: Typed",
 ]
 
 dependencies = [
@@ -37,6 +43,7 @@ dependencies = [
     "anthropic>=0.34.0",
     "pymupdf4llm",
     "rich-click>=1.8.0",
+    "socksio>=1.0.0",
 ]
 
 [project.optional-dependencies]

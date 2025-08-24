@@ -7,7 +7,8 @@ import httpx
 from pydantic_ai import Agent
 from pydantic_ai.models import KnownModelName, Model
 from pydantic_ai.models.anthropic import AnthropicModel
-from pydantic_ai.models.gemini import GeminiModel
+from pydantic_ai.models.google import GoogleModel
+from pydantic_ai.providers.google import GoogleProvider
 # from pydantic_ai.models.ollama import OllamaModel
 
 from .config import ConfigManager
@@ -37,19 +38,21 @@ class AIClient:
                     "claude-clis config set ai.gemini.api_key YOUR_KEY"
                 )
             
-            model = GeminiModel(
+            google_provider = GoogleProvider(api_key=api_key)
+            model = GoogleModel(
                 model_name=config["model"],
-                api_key=api_key,
+                provider=google_provider,
             )
             
         elif provider == "ollama":
             # Use OpenAI-compatible endpoint for Ollama
             from pydantic_ai.models.openai import OpenAIModel
+            from pydantic_ai.providers.ollama import OllamaProvider
+            
+            ollama_provider = OllamaProvider(base_url=config["base_url"])
             model = OpenAIModel(
                 model_name=config["model"],
-                base_url=config["base_url"] + "/v1",
-                api_key="ollama",  # Ollama doesn't need real API key
-                http_client=httpx.Client(timeout=config["timeout"]),
+                provider=ollama_provider,
             )
             
         elif provider == "anthropic":
@@ -98,7 +101,7 @@ class AIClient:
         
         try:
             result = await agent.run(prompt)
-            return result.data
+            return result.output
         except Exception as e:
             raise AIClientError(f"AI request failed: {str(e)}") from e
 
@@ -140,6 +143,18 @@ Please provide only the converted Markdown content without any additional explan
 
         return base_prompt
 
+    def _clean_markdown_response(self, content: str) -> str:
+        """Remove markdown code block wrappers that AI models sometimes add."""
+        content = content.strip()
+        
+        # Remove markdown code block wrappers
+        if content.startswith("```markdown\n") and content.endswith("\n```"):
+            content = content[12:-4].strip()
+        elif content.startswith("```\n") and content.endswith("\n```"):
+            content = content[4:-4].strip()
+        
+        return content
+
     async def convert_to_markdown(
         self,
         content: str,
@@ -159,12 +174,14 @@ Please provide only the converted Markdown content without any additional explan
         - Maintaining document structure and hierarchy
         """
         
-        return await self.ai_client.run_prompt(
+        result = await self.ai_client.run_prompt(
             prompt=prompt,
             provider=provider,
             system_prompt=system_prompt,
             **kwargs
         )
+        
+        return self._clean_markdown_response(result)
 
     def chunk_content(self, content: str, chunk_size: int = 4000) -> list[str]:
         if len(content) <= chunk_size:
@@ -227,6 +244,6 @@ Please provide only the converted Markdown content without any additional explan
                 system_prompt="You are converting part of a larger document to Markdown. Maintain consistency with document structure.",
                 **kwargs
             )
-            processed_chunks.append(processed_chunk)
+            processed_chunks.append(self._clean_markdown_response(processed_chunk))
         
         return "\n\n---\n\n".join(processed_chunks)

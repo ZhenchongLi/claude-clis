@@ -38,9 +38,32 @@ claude-clis doc2md convert document.pdf --style academic
 ### Prerequisites
 
 - Python 3.11 or higher
-- [uv package manager](https://github.com/astral-sh/uv) (recommended)
 
-### Install with uv (Recommended)
+### Install with pipx (Recommended)
+
+[pipx](https://pipx.pypa.io/) is the best way to install CLI tools like claude-clis. It creates an isolated environment for each tool while making the commands globally available.
+
+```bash
+# Install pipx if you haven't already
+pip install pipx
+pipx ensurepath
+
+# Install claude-clis from PyPI (when published)
+pipx install claude-clis
+
+# Or install directly from GitHub
+pipx install git+https://github.com/your-username/claude-clis.git
+
+# Upgrade to latest version
+pipx upgrade claude-clis
+
+# Uninstall cleanly
+pipx uninstall claude-clis
+```
+
+### Alternative Installation Methods
+
+#### Install with uv
 
 ```bash
 # Clone the repository
@@ -54,11 +77,23 @@ uv pip install -e .
 uv add claude-clis
 ```
 
-### Install with pip
+#### Install with pip
 
 ```bash
+# From PyPI (when published)
 pip install claude-clis
+
+# Or from source
+pip install git+https://github.com/your-username/claude-clis.git
 ```
+
+### Installation Comparison
+
+| Method | Best For | Pros | Cons |
+|--------|----------|------|------|
+| **pipx** | End users | Isolated environment, global commands | Requires pipx installation |
+| **uv** | Developers | Fast, modern package management | Newer tool |
+| **pip** | Traditional setup | Widely available | May cause dependency conflicts |
 
 ## Quick Start
 
@@ -132,6 +167,50 @@ claude-clis config set ai.anthropic.api_key YOUR_CLAUDE_API_KEY
 ```
 
 Get your API key at: [Anthropic Console](https://console.anthropic.com/)
+
+## Claude Code Integration
+
+Integrate claude-clis commands directly into Claude Code sessions for seamless usage.
+
+### Register Commands
+
+```bash
+# Register all claude-clis commands to Claude Code
+claude-clis claude-code register
+
+# Use custom command names
+claude-clis claude-code register --name my-tools
+
+# Force override existing commands
+claude-clis claude-code register --force
+```
+
+### Manage Registered Commands
+
+```bash
+# List registered commands
+claude-clis claude-code list
+
+# Check integration status
+claude-clis claude-code status
+
+# Unregister commands
+claude-clis claude-code unregister
+
+# Unregister all commands
+claude-clis claude-code unregister --all
+```
+
+### Usage in Claude Code
+
+After registration, use these slash commands in Claude Code:
+
+```
+/claude-clis-doc2md document.pdf
+/claude-clis-doc2md-batch /path/to/docs/
+/claude-clis-config show
+/claude-clis-help
+```
 
 ## Development
 
