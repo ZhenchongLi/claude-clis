@@ -45,7 +45,7 @@ pipx ensurepath
 pipx install claude-clis
 
 # 或直接从 GitHub 安装
-pipx install git+https://github.com/your-username/claude-clis.git
+pipx install git+https://github.com/ZhenchongLi/claude-clis.git
 
 # 升级到最新版本
 pipx upgrade claude-clis
@@ -64,7 +64,7 @@ pipx uninstall claude-clis
 
 ```bash
 # 克隆项目
-git clone https://github.com/your-username/claude-clis.git
+git clone https://github.com/ZhenchongLi/claude-clis.git
 cd claude-clis
 
 # 开发模式安装
@@ -81,7 +81,7 @@ uv add claude-clis
 pip install claude-clis
 
 # 或从源码安装
-pip install git+https://github.com/your-username/claude-clis.git
+pip install git+https://github.com/ZhenchongLi/claude-clis.git
 ```
 
 ### 安装方式对比
@@ -374,7 +374,7 @@ claude-clis doc2md test
 
 ```bash
 # 克隆并设置项目
-git clone https://github.com/your-username/claude-clis.git
+git clone https://github.com/ZhenchongLi/claude-clis.git
 cd claude-clis
 
 # 安装开发依赖
@@ -436,14 +436,10 @@ claude-clis/
 
 ## 📚 更多资源
 
-- **项目主页**：https://github.com/your-username/claude-clis
-- **问题报告**：https://github.com/your-username/claude-clis/issues
+- **项目主页**：https://github.com/ZhenchongLi/claude-clis
+- **问题报告**：https://github.com/ZhenchongLi/claude-clis/issues
 - **API 文档**：查看源代码中的详细注释
 
 ## 📄 许可证
 
 本项目采用 MIT 许可证 - 查看 [LICENSE](LICENSE) 文件了解详情。
-
----
-
-*本项目使用 Claude Code 生成，Claude Code 是 Anthropic 官方的 Claude CLI 工具。*

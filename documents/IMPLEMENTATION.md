@@ -79,17 +79,17 @@ graph TD
     A[main.py] --> B[shared/]
     A --> C[tools/]
     A --> D[commands/]
-    
+
     B --> B1[ai_client.py]
     B --> B2[config.py]
     B --> B3[utils.py]
-    
+
     C --> C1[doc2md/cli.py]
     C1 --> C2[doc2md/processor.py]
     C2 --> C3[doc2md/readers/]
-    
+
     D --> D1[claude_code.py]
-    
+
     C2 --> B1
     C2 --> B2
     C1 --> B3
@@ -146,7 +146,7 @@ def config_set(cli_ctx: CLIContext, key: str, value: str) -> None:
    ```python
    def print_info(message: str) -> None:
        console.print(f"[blue]ℹ[/blue] {message}")
-   
+
    def print_table(title: str, columns: list[str], rows: list[list[str]]) -> None:
        table = create_table(title, columns, rows, show_header)
        console.print(table)
@@ -156,7 +156,7 @@ def config_set(cli_ctx: CLIContext, key: str, value: str) -> None:
    ```python
    def format_file_size(size_bytes: int) -> str:
        # 智能文件大小格式化 (B, KB, MB, GB)
-   
+
    def sanitize_filename(filename: str) -> str:
        # 文件名安全处理，移除特殊字符
    ```
@@ -168,7 +168,7 @@ def config_set(cli_ctx: CLIContext, key: str, value: str) -> None:
            self.verbose: bool = False
            self.quiet: bool = False
            self.dry_run: bool = False
-       
+
        def log(self, message: str, level: str = "info") -> None:
            # 统一日志输出管理
    ```
@@ -202,14 +202,14 @@ class AIClient:
 
 ```python
 def create_agent(
-    self, 
+    self,
     provider: str | None = None,
     system_prompt: str | None = None,
     **kwargs: Any
 ) -> Agent[None, str]:
     provider = provider or self._config_manager.get_ai_provider()
     model = self._get_model(provider)
-    
+
     return Agent(model=model, system_prompt=system_prompt, **kwargs)
 ```
 
@@ -219,7 +219,7 @@ def create_agent(
 class DocumentProcessor:
     def __init__(self, ai_client: AIClient) -> None:
         self.ai_client = ai_client
-    
+
     async def convert_to_markdown(
         self,
         content: str,
@@ -229,7 +229,7 @@ class DocumentProcessor:
         **kwargs: Any
     ) -> str:
         prompt = self._create_conversion_prompt(content, style, preserve_formatting)
-        
+
         return await self.ai_client.run_prompt(
             prompt=prompt,
             provider=provider,
@@ -244,13 +244,13 @@ class DocumentProcessor:
 def chunk_content(self, content: str, chunk_size: int = 4000) -> list[str]:
     if len(content) <= chunk_size:
         return [content]
-    
+
     chunks = []
     current_pos = 0
-    
+
     while current_pos < len(content):
         end_pos = min(current_pos + chunk_size, len(content))
-        
+
         # 智能断点查找：优先段落边界，其次句子边界
         if end_pos < len(content):
             for i in range(end_pos, max(current_pos + chunk_size // 2, end_pos - 200), -1):
@@ -309,7 +309,7 @@ class ConfigManager:
         if self._config_file.exists():
             with open(self._config_file, encoding="utf-8") as f:
                 config_data = yaml.safe_load(f) or {}
-        
+
         # 结合环境变量和文件配置
         self._config = Config(**config_data)
         return self._config
@@ -320,14 +320,14 @@ class ConfigManager:
 ```python
 def set_config_value(self, key: str, value: Any) -> None:
     config = self.load_config()
-    
+
     # 处理嵌套键如 "ai.provider" 或 "ai.gemini.api_key"
     keys = key.split(".")
     target = config
-    
+
     for k in keys[:-1]:
         target = getattr(target, k)
-    
+
     setattr(target, keys[-1], value)
     self.save_config(config)
 ```
@@ -364,7 +364,7 @@ def convert(cli_ctx: CLIContext, input_file: Path, ...):
 @click.option("--max-concurrent", type=int, default=3)
 def batch(cli_ctx: CLIContext, input_dir: Path, max_concurrent: int, ...):
     """📁 Convert multiple documents in a directory"""
-    
+
     results = asyncio.run(processor.batch_convert(
         input_dir=input_dir,
         max_concurrent=max_concurrent,
@@ -384,7 +384,7 @@ class Doc2mdProcessor:
         self.cli_ctx = cli_ctx
         self.ai_client = AIClient(config_manager)
         self.doc_processor = DocumentProcessor(self.ai_client)
-        
+
         # 动态初始化文档读取器
         try:
             self.pdf_reader = PDFReader()
@@ -407,21 +407,21 @@ async def convert_file(
     input_path = Path(input_file)
     if not self.is_supported_format(input_path):
         raise ProcessorError(f"Unsupported file format: {input_path.suffix}")
-    
+
     # 2. 内容提取
     content = await self._extract_content(input_path)
-    
+
     # 3. AI处理
     markdown_content = await self.doc_processor.process_large_content(
         content=content,
         provider=ai_provider,
         **kwargs
     )
-    
+
     # 4. 元数据生成和保存
     metadata = self._generate_metadata(input_path, ai_provider, style)
     final_content = f"{metadata}\n\n{markdown_content}"
-    
+
     with open(output_path, 'w', encoding='utf-8') as f:
         f.write(final_content)
 ```
@@ -432,18 +432,18 @@ async def convert_file(
 async def batch_convert(self, max_concurrent: int = 3, **kwargs) -> list[Path]:
     semaphore = asyncio.Semaphore(max_concurrent)
     tasks = []
-    
+
     async def convert_with_semaphore(file: Path) -> Path | None:
         async with semaphore:
             try:
                 return await self.convert_file(input_file=file, **kwargs)
             except ProcessorError:
                 return None
-    
+
     # 创建并执行任务
     for file in files:
         tasks.append(convert_with_semaphore(file))
-    
+
     results = await asyncio.gather(*tasks, return_exceptions=True)
     return [r for r in results if isinstance(r, Path)]
 ```
@@ -464,7 +464,7 @@ class PDFReader:
             self.fitz = fitz
         except ImportError as e:
             raise PDFReaderError(f"PDF dependencies not available: {e}")
-    
+
     def read_pdf(self, file_path: Path | str) -> str:
         """使用PyMuPDF4LLM提取PDF内容，针对LLM处理优化"""
         try:
@@ -473,7 +473,7 @@ class PDFReader:
             return md_text
         except Exception as e:
             raise PDFReaderError(f"Failed to read PDF: {e}")
-    
+
     def get_pdf_info(self, file_path: Path | str) -> dict[str, Any]:
         """获取PDF元数据信息"""
         with self.fitz.open(str(file_path)) as doc:
@@ -497,24 +497,24 @@ class WordReader:
             self.Document = Document
         except ImportError as e:
             raise WordReaderError(f"Word dependencies not available: {e}")
-    
+
     def read_docx(self, file_path: Path | str) -> str:
         """读取DOCX文档并转换为纯文本"""
         doc = self.Document(str(file_path))
-        
+
         content_parts = []
-        
+
         # 处理段落
         for paragraph in doc.paragraphs:
             if paragraph.text.strip():
                 content_parts.append(paragraph.text)
-        
+
         # 处理表格
         for table in doc.tables:
             table_content = self._extract_table_content(table)
             if table_content:
                 content_parts.append(table_content)
-        
+
         return '\n\n'.join(content_parts)
 ```
 
@@ -556,7 +556,7 @@ def create_claude_command(
 def register(ctx: CLIContext, name: str, force: bool) -> None:
     # 获取claude-clis可执行文件路径
     claude_clis_path = shutil.which("claude-clis")
-    
+
     # 定义要注册的命令
     commands_to_register = [
         {
@@ -570,7 +570,7 @@ def register(ctx: CLIContext, name: str, force: bool) -> None:
         },
         # ... 其他命令
     ]
-    
+
     # 批量写入JSON配置文件
     for cmd_info in commands_to_register:
         cmd_file = commands_dir / f"{cmd_info['filename']}.json"
@@ -586,18 +586,18 @@ def list_commands(ctx: CLIContext, name: str) -> None:
     """列出已注册的命令"""
     commands_dir = get_commands_dir()
     command_files = list(commands_dir.glob(f"{name}-*.json"))
-    
+
     table = Table(title=f"📋 Registered Commands ({name})")
     for cmd_file in sorted(command_files):
         with open(cmd_file, 'r', encoding='utf-8') as f:
             cmd_config = json.load(f)
-        
+
         table.add_row(
             cmd_config.get('name', 'N/A'),
             cmd_config.get('description', 'N/A'),
             ', '.join(cmd_config.get('tags', []))
         )
-    
+
     console.print(table)
 ```
 
@@ -701,7 +701,7 @@ pipx ensurepath
 pipx install claude-clis
 
 # 或从 GitHub 直接安装
-pipx install git+https://github.com/your-username/claude-clis.git
+pipx install git+https://github.com/ZhenchongLi/claude-clis.git
 
 # 升级和卸载
 pipx upgrade claude-clis
@@ -710,14 +710,14 @@ pipx uninstall claude-clis
 
 **pipx 优势：**
 - 🔒 **环境隔离**: 每个工具在独立虚拟环境中运行
-- 🌐 **全局可用**: 命令在系统范围内可访问  
+- 🌐 **全局可用**: 命令在系统范围内可访问
 - 🚀 **易于管理**: 简单的升级和卸载流程
 - 🎯 **专为 CLI 设计**: 专门针对命令行工具优化
 
 #### 开发安装
 ```bash
 # 克隆仓库
-git clone https://github.com/your-username/claude-clis.git
+git clone https://github.com/ZhenchongLi/claude-clis.git
 cd claude-clis
 
 # 开发模式安装
@@ -729,11 +729,11 @@ uv pip install -e .
 # 使用 uv
 uv add claude-clis
 
-# 使用 pip  
+# 使用 pip
 pip install claude-clis
 
 # 从源码安装
-pip install git+https://github.com/your-username/claude-clis.git
+pip install git+https://github.com/<your-github-username-or-org>/claude-clis.git
 ```
 
 ### 安装方式对比
@@ -860,7 +860,7 @@ class NewFormatReader:
             self.lib = required_library
         except ImportError as e:
             raise NewFormatReaderError(f"Dependencies not available: {e}")
-    
+
     def read_document(self, file_path: Path | str) -> str:
         # 实现文档读取逻辑
         pass
@@ -872,7 +872,7 @@ class NewFormatReader:
 # src/claude_clis/tools/doc2md/processor.py
 def __init__(self, cli_ctx: CLIContext) -> None:
     # ... 现有初始化代码
-    
+
     try:
         from .readers.newformat import NewFormatReader
         self.newformat_reader = NewFormatReader()
