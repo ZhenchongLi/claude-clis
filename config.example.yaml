@@ -1,0 +1,57 @@
+# Example configuration file for claude-clis
+# Copy this file to ~/.claude-clis/config.yaml and customize as needed
+
+# AI Configuration
+ai:
+  # Choose your AI provider: "gemini", "ollama", or "anthropic"
+  provider: "gemini"
+  
+  # Gemini (Google AI) Configuration
+  gemini:
+    api_key: ""  # Set your Gemini API key here or via CLAUDE_CLIS_AI_GEMINI_API_KEY
+    model: "gemini-1.5-pro"
+    temperature: 0.3
+    max_tokens: 4096
+  
+  # Ollama (Local) Configuration
+  ollama:
+    base_url: "http://localhost:11434"
+    model: "llama3.2:latest"
+    temperature: 0.3
+    timeout: 120
+  
+  # Anthropic (Claude) Configuration
+  anthropic:
+    api_key: ""  # Set your Anthropic API key here or via CLAUDE_CLIS_AI_ANTHROPIC_API_KEY
+    model: "claude-3-sonnet-20240229"
+    temperature: 0.3
+    max_tokens: 4096
+
+# Tools Configuration
+tools:
+  # Document to Markdown converter settings
+  doc2md:
+    default_style: "technical"  # Output style: "technical", "casual", "academic"
+    chunk_size: 4000           # Size of text chunks for processing
+    preserve_formatting: true  # Whether to preserve original formatting
+    output_format: "markdown"  # Output format (currently only markdown)
+
+# Environment Variables (alternative to file configuration):
+# You can also set these values using environment variables:
+# CLAUDE_CLIS_AI_PROVIDER=gemini
+# CLAUDE_CLIS_AI_GEMINI_API_KEY=your_api_key_here
+# CLAUDE_CLIS_AI_GEMINI_MODEL=gemini-1.5-pro
+# CLAUDE_CLIS_AI_GEMINI_TEMPERATURE=0.3
+# CLAUDE_CLIS_AI_GEMINI_MAX_TOKENS=4096
+# CLAUDE_CLIS_AI_OLLAMA_BASE_URL=http://localhost:11434
+# CLAUDE_CLIS_AI_OLLAMA_MODEL=llama3.2:latest
+# CLAUDE_CLIS_AI_OLLAMA_TEMPERATURE=0.3
+# CLAUDE_CLIS_AI_OLLAMA_TIMEOUT=120
+# CLAUDE_CLIS_AI_ANTHROPIC_API_KEY=your_api_key_here
+# CLAUDE_CLIS_AI_ANTHROPIC_MODEL=claude-3-sonnet-20240229
+# CLAUDE_CLIS_AI_ANTHROPIC_TEMPERATURE=0.3
+# CLAUDE_CLIS_AI_ANTHROPIC_MAX_TOKENS=4096
+# CLAUDE_CLIS_TOOLS_DOC2MD_DEFAULT_STYLE=technical
+# CLAUDE_CLIS_TOOLS_DOC2MD_CHUNK_SIZE=4000
+# CLAUDE_CLIS_TOOLS_DOC2MD_PRESERVE_FORMATTING=true
+# CLAUDE_CLIS_TOOLS_DOC2MD_OUTPUT_FORMAT=markdown
